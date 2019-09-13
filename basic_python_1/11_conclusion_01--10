@@ -1,0 +1,69 @@
+不可变数据类型：
+    bool, int, float, complex, str, tuple,
+    frozenset, bytes
+
+可变数据类型：
+    list, dict, set, bytearray
+
+值：
+    None, True, False ....
+
+运算符：
+    +   -   *   /   //  %   **
+    >   >=  <   <=  ==  !=
+    is      is not
+    in      not in
+    not     and     or
+    &   |   ^
+
+表达式语句：
+    print("abc")
+    'hello'
+
+赋值语句：
+    a = 100
+    a = b = c = 100
+    x, y = 100, 200
+
+    if
+    while
+    for
+    break
+    continue
+    pass
+    del
+
+内建函数：
+    len(x)
+    max(x)
+    min(x)
+    sum(x)
+    any(x)
+    all(x)
+    ---------------
+    bool(x)
+    int(x)
+    float(x)
+    complex(x)
+    str(x)
+    list(x)
+    tuple(x)
+    dict(x)
+    set(x)
+    frozenset(x)
+    ---------------
+    abs(x)
+    round(x)
+    pow(x, y, ...)
+    ---------------
+    bin(x)
+    oct(x)
+    hex(x)
+    chr(x)
+    ord(x)
+    ---------------
+    range([start, ]stop[, step])    
+    ---------------
+    input(x)
+    print(---)
+
