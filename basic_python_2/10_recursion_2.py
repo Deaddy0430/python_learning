@@ -7,7 +7,7 @@ def mysum(x):   #x cannot be 1000 because the max recursive level for python is 
 v=mysum(100) 
 #print(v)
 
-#==========Example 2==========
+#==========Example 2===========
 #求阶乘： n！= 1 x 2 x 3 xx...x (n-1) x n
 def myfac(x):
     if x<=1:
