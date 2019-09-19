@@ -5,5 +5,5 @@ def make_power(y):  #the y comes from outside
 pow2 = make_power(2)
 print('3^2 is: ', pow2(3))
 
-pow2 = make_power(3)
-print('3^3 is: ', pow2(3))
+pow3 = make_power(3)
+print('3^3 is: ', pow3(3))
