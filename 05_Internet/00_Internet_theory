@@ -1,3 +1,4 @@
+------------------------------------------------网络模型------------------------------------------------------
 OSI七层模型 --> 网络通信工作流程
 （软件主要研究操作前四层）
 1. 应用层：提供用户服务，具体功能由特定的程序而定
@@ -117,7 +118,7 @@ b'\xc0\xa8\x01\x02'
 传输特征：不保证传输的可靠性，传输过程没有连接和断开的流程，数据收发自由
 应用情况：网络情况较差，对传输可靠性要求不高，需要提升传输效率。不变连接，需要灵活收发消息，比如网络视频，群聊，广播发送
 
-------------------------------------------------socket套接字编程（在应用层）------------------------------------------------------
+------------------------------------------------socket套接字编程------------------------------------------------------
 目标：根据socket模块提供的接口函数，进行组合使用完成基于TCP或UDP的网络编程
 
 套接字(socket)：完成上述目标的一种编程手段，编程方案
@@ -128,7 +129,7 @@ b'\xc0\xa8\x01\x02'
     * 面向连接的传输->TCP协议->可靠->流式套接字
     * 面向无连接传输->UDP协议->不可靠->数据报套接字
 
-TCP套接字服务端编程：（详情见—>TCP_Server.png) （代码->TCP_Server.py）:
+一· TCP套接字服务端编程：（详情见—>TCP_Server.png) （代码->TCP_Server.py）
 import socket（*必须import这个lib，才能调用socket方程）
 1. 创建套接字
     sockfd = socket.socket(socket_family = AF_INET, socket_type = SOCK_STREAM, proto = 0)
@@ -170,7 +171,7 @@ import socket（*必须import这个lib，才能调用socket方程）
     sockfd.close()
     功能：关闭套接字
 
-TCP套接字客户端编程：（详情见—>TCP_Client.png) （代码->TCP_Client.py）:
+二· TCP套接字客户端编程：（详情见—>TCP_Client.png) （代码->TCP_Client.py）:
 1. 创建套接字
     *必须相同类型的套接字才能通信
 2. 建立连接
@@ -180,12 +181,104 @@ TCP套接字客户端编程：（详情见—>TCP_Client.png) （代码->TCP_Cli
 3. 消息收发
 4. 关闭套接字
 
+三· TCP总结
 TCP_Server总结：
 socket() ---> bind() ---> listen() ---> accept() --->recv/send ---> close()
 TCP_Client总结：
 socket() ---> connect() ---> send/recv ---> close()
 
-------------------------------------------------socket套接字传输注意事项------------------------------------------------------
-1. listen socket存在时，client即可发起连接，但是最终连接处理需要accept进行处理
-2. 如果连接的另一端退出， 则recv会立即返回空子串不在阻塞
-3. 当连接当另一端退出的时候， 再试图send就会产生BrokenPipeError
+socket套接字传输注意事项：
+    1. listen socket存在时，client即可发起连接，但是最终连接处理需要accept进行处理
+    2. 如果连接的另一端退出， 则recv会立即返回空子串不在阻塞
+    3. 当连接当另一端退出的时候， 再试图send就会产生BrokenPipeError
+网络收发缓冲区：
+缓冲区作用：协调收发（处理）速度；减少交互次数
+send和recv实际上是和缓冲区进行交互，发送缓冲区满时就无法发送，接收缓冲区满时recv就会阻塞
+data = connfd.recv(1024).decode()   这里1024就是缓recv冲区的大小 
+
+TCP粘包：
+产生原因：TCP_socket以字节流方式传输，没有消息边界。发送和接收并不能保证每次发送都及时的被接收
+影响：如果每次发送内容表达一个独立的含义，此时可能需要处理粘包防止产生歧义
+处理方法：
+    1. 每次发送的消息添加结尾标志（人为增加消息边界）
+    2. 发送数据结构体（相对复杂）
+    3. 协调收发速度，每次发送后都预留接收时间（相对简单）
+
+四· UDP套接字服务端编程：（详情见—>UDP_Server.png) （代码->UDP_Server.py）
+1. 创建数据报套接字
+sockfd = socket(AF_INET, SOCK_DGRAM)
+2. 绑定地址
+sockfd.bind(addr)
+3.消息收发
+data, addr = sockfd.recvfrom(buffersize)
+功能：接收UDP消息
+参数：每次最多接收多大的消息
+返回值：data -> 接收到的数据    addr -> 消息发送端的地址
+sockfd.sendto(data, addr)
+功能：发送UDP消息
+参数： data -> 发送的消息（bytes格式）  addr -> 目标地址
+返回值：发送的字节数
+***一次只接收一个数据报，如果接受的数据报大于buffersize，则会丢失部分数据
+4. 关闭套接字
+sockfd.close()
+
+五· UDP套接字客户端编程：（详情见—>UDP_Client.png) （代码->UDP_Client.py）:
+1. 创建数据报套接字
+socket(AF_INET, SOCK_DGRAM)
+2. 消息收发
+recvfrom/sendto
+3. 关闭套接字
+close()
+
+cookie：
+sys.argv属性
+    功能：获取命令行参数， 得到一个列表
+    命令本身是argv[0], 后面的参数从argv[1]开始， 默认以空格分隔，使用引号引起来的内容算作一个整体。
+改变argv.py权限：代码前面加上：#!/usr/bin/env python3 然后command：chmod 766 argv.py
+
+六· TCP_socket与UDP_socket区别（编程角度上
+1. TCP：流式（stream）套接字使用字节流的方式传输    UDP：数据报套接字以数据报形式传输数据
+2. TCP会有粘包现象  UDP有消息边界不会形成粘包
+3. TCP可以保障数据传输完整性    UDP则不保证
+4. TCP需要进行listen, accept等操作  UDP不需要
+5. TCP收发消息使用新的套接字recv, send     UDP使用recvfrom, sendto
+
+七· 补充函数
+sendall(data)   #对比send(), sendall需要全部发送出去，要么就一点也不发送
+功能：发送TCP消息
+参数：要发送的内容，bytes格式
+返回值：成功->none  失败->产生异常
+
+------------------------------------------------套接字对象------------------------------------------------------
+常见套接字方程：
+s代表一个套接字
+s.family: 获取套接字地址族类型
+s.type: 获取套接字类型
+s.getsockname(): 获取套接字的绑定地址
+s.fileno(): 获取套接字的文件描述符  文件描述符：每一个IO事件操作系统都会分配一个不同的正整数作为编号，该正整数即为这个IO文件描述符
+    >>> import sys
+    >>> sys.stdin.fileno()
+    0
+    >>> sys.stdout.fileno()
+    1
+    >>> sys.stderr.fileno()
+    2
+*文件描述符是操作系统识别IO的唯一标准
+s.getpeername(): 获取客户端连接套接字的对应地址
+s.setsockopt(level, option, value)
+    功能：设置套接字选项
+    参数：
+        level 选项类别: SOL_SOCKET   
+        option 具体选项    
+        value 选项值
+s.getsockopt(level, option)
+    功能：获取套接字选项
+    参数：
+        level 选项类别: SOL_SOCKET   
+        option 具体选项    
+    返回值：选项值
+*如果要设置套接字选项，最好在创建套接字之后立即设置
+
+------------------------------------------------UDP应用之广播------------------------------------------------------
+广播：一点发送，多点接收
+广播地址：一个网段内有一个指定的广播地址，是该网段的最大地址 192.168.137.127

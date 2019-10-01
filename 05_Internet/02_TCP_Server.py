@@ -18,7 +18,7 @@ while True:
     print("Connect from", addr)
     while True:
         #recv&send
-        data = connfd.recv(1024).decode()
+        data = connfd.recv(1024).decode()   #缓冲区1024
         if not data:
             break
         print(data)
